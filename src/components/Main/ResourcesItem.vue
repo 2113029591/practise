@@ -10,50 +10,51 @@
         <th>最后更新时间</th>
         <th>操作</th>
         </thead>
-        <tr>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
+        <tr v-for="(person,index) in persons" :key="index">
+          <td><input type="text" v-model="person.id"></td>
+          <td><input type="text" v-model="person.itemName"></td>
+          <td><input type="text" v-model="getNumber" ></td>
+          <td><input type="text" v-model="person.inTime"></td>
+          <td><input type="text" v-model="person.updateTime"></td>
           <td class="td-btn">
             <button>编辑</button>
             <button>删除</button>
           </td>
         </tr>
-        <tr>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td class="td-btn">
-            <button>编辑</button>
-            <button>删除</button>
-          </td>
-        </tr>
-        <tr>
-        <td><input type="text" value="1"></td>
-        <td><input type="text" value="1"></td>
-        <td><input type="text" value="1"></td>
-        <td><input type="text" value="1"></td>
-        <td><input type="text" value="1"></td>
-        <td class="td-btn">
-          <button>编辑</button>
-          <button>删除</button>
-        </td>
-      </tr>
-        <tr>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td><input type="text" value="1"></td>
-          <td class="td-btn">
-            <button>编辑</button>
-            <button>删除</button>
-          </td>
-        </tr>
+        <p>{{getNumber}}</p>
+<!--        <tr>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td class="td-btn">-->
+<!--            <button>编辑</button>-->
+<!--            <button>删除</button>-->
+<!--          </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--        <td><input type="text" value="1"></td>-->
+<!--        <td><input type="text" value="1"></td>-->
+<!--        <td><input type="text" value="1"></td>-->
+<!--        <td><input type="text" value="1"></td>-->
+<!--        <td><input type="text" value="1"></td>-->
+<!--        <td class="td-btn">-->
+<!--          <button>编辑</button>-->
+<!--          <button>删除</button>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--        <tr>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td><input type="text" value="1"></td>-->
+<!--          <td class="td-btn">-->
+<!--            <button>编辑</button>-->
+<!--            <button>删除</button>-->
+<!--          </td>-->
+<!--        </tr>-->
       </table>
     </div>
   </div>
@@ -61,7 +62,25 @@
 
 <script>
 export default {
-  name: "ResourcesItem"
+  name: "ResourcesItem",
+  data:function (){
+    return{
+
+    }
+  },
+  computed:{
+    persons:function (){
+      return this.$store.state.persons
+    },
+    getNumber:{
+      get(){
+        return this.$store.state.persons.find(x=>x.onlyId=1).number
+      },
+      set(newNumber){
+        this.$store.commit("getNumber",newNumber)
+      }
+    }
+  }
 }
 </script>
 
