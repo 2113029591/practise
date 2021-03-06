@@ -15,7 +15,7 @@
           </li>
           <li>
             <img src="../assets/person.png" alt="">
-            <input type="text" :placeholder="inputPassword">
+            <input type="password" :placeholder="inputPassword">
           </li>
         </ul>
       </div>
