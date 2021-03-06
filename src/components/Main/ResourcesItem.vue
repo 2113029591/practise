@@ -2,15 +2,23 @@
   <div class="res-container">
     <div class="change-box">
       <div class="change-btn">
-        <div class="btn">添加</div>
-        <div class="btn">查询</div>
+        <div class="btn" @click="changeAddDisplay">添加</div>
+        <div class="btn" @click="changQueryDisplay">查询</div>
+        <div class="btn" @click="cancelAction">取消操作</div>
       </div>
-      <div class="change-input-box">
-        <p>物品名称</p>
-        <input type="text">
-        <p>物品数量</p>
-        <input type="text">
-        <button>添加</button>
+      <div class="change-input-box add" v-if="isAddDisplay">
+        <p>物品名称:</p>
+        <input type="text" v-model="person.itemName">
+        <p>物品数量:</p>
+        <input type="text" v-model="person.number">
+        <button @click="add">添加</button>
+      </div>
+      <div class="change-input-box query" v-if="isQueryDisplay">
+        <p>根据物品名称查询:</p>
+        <input type="text" v-model="person.itemName">
+        <p>根据物品数量查询:</p>
+        <input type="text" v-model="person.number">
+        <button >查询</button>
       </div>
     </div>
     <div>
@@ -44,6 +52,12 @@ export default {
   name: "ResourcesItem",
   data:function (){
     return{
+      //maxOnlyId:用来记录唯一的id值作为key
+      maxOnlyId:4,
+      //totalNumber:用来记录总共的记录数量，作为编号输入
+      totalNumber:4,
+      isAddDisplay:false,
+      isQueryDisplay:false,
       isShow:true,
       persons:[
         {
@@ -82,7 +96,12 @@ export default {
           updateTime:Date.now(),
           isDisabled:true
         }
-      ]
+      ],
+      person:{
+        itemName:"",
+        number:"",
+        isDisabled:true
+      }
     }
   },
   computed:{},
@@ -98,6 +117,32 @@ export default {
         }
       })
       this.persons.splice(index,1)
+    },
+    add(){
+      this.person.inTime=Date.now()
+      this.person.updateTime=Date.now()
+      this.maxOnlyId++;
+      this.person.onlyId=this.maxOnlyId
+      this.totalNumber++;
+      this.person.id=this.totalNumber;
+      this.persons.push(this.person)
+      this.person={
+        itemName:"",
+        number:"",
+        isDisabled:true
+      }
+    },
+    changeAddDisplay(){
+      this.isAddDisplay=true
+      this.isQueryDisplay=!this.isAddDisplay
+    },
+    changQueryDisplay(){
+      this.isQueryDisplay=true
+      this.isAddDisplay=!this.isQueryDisplay
+    },
+    cancelAction(){
+      this.isAddDisplay=false
+      this.isQueryDisplay=false
     }
   }
 }
@@ -106,7 +151,7 @@ export default {
 <style scoped>
 .change-box{
   width: 100%;
-  height: 100px;
+  /*height: 100px;*/
   background: skyblue;
 }
 .change-btn{
@@ -126,10 +171,18 @@ export default {
   display: flex;
   justify-content: center;
 }
+.change-input-box p{
+  line-height: 60px;
+}
 .change-input-box input{
   align-self: center;
   width: 100px;
   height: 35px;
+}
+.change-input-box button{
+  width: 100px;
+  height: 35px;
+  align-self: center;
 }
 .res-container{
   background: white;
