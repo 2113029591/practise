@@ -21,10 +21,9 @@ export default {
 }
 body,html{
   height: 100%;
+  /*background: #cac6c6;*/
 }
 #app {
   height: 100%;
-  background: lightgray;
-  box-sizing: border-box;
 }
 </style>

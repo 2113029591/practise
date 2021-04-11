@@ -1,150 +1,233 @@
 <template>
   <div class="res-container">
-    <div class="change-box">
-      <div class="change-btn">
-        <div class="btn" @click="changeAddDisplay">添加</div>
-        <div class="btn" @click="changQueryDisplay">查询</div>
-        <div class="btn" @click="cancelAction">取消操作</div>
-      </div>
-      <div class="change-input-box add" v-if="isAddDisplay">
-        <p>物品名称:</p>
-        <input type="text" v-model="person.itemName">
-        <p>物品数量:</p>
-        <input type="text" v-model="person.number">
-        <button @click="add">添加</button>
-      </div>
-      <div class="change-input-box query" v-if="isQueryDisplay">
-        <p>根据物品名称查询:</p>
-        <input type="text" v-model="person.itemName">
-        <p>根据物品数量查询:</p>
-        <input type="text" v-model="person.number">
-        <button >查询</button>
-      </div>
-    </div>
+
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="添加信息" name="first">
+        <el-col :span="24" class="toolbar">
+        <el-form :inline="true">
+          <div style="display: flex;justify-content: center">
+            <el-form-item class="form-item">
+              <el-input  placeholder="请输入位置" style="width: 14vw"></el-input>
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-input  placeholder="请输入商品类型" style="width: 14vw"></el-input>
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-input  placeholder="请输入商品状态" style="width: 14vw"></el-input>
+            </el-form-item><el-form-item class="form-item">
+            <el-input  placeholder="请输入商品单位" style="width: 14vw"></el-input>
+          </el-form-item>
+            <el-form-item class="form-item">
+              <el-button type="primary"  icon="el-icon-search">添加</el-button>
+              <el-button type="primary" >重置</el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-col>
+      </el-tab-pane>
+      <el-tab-pane label="查询信息" name="second">
+        <el-col :span="24" class="toolbar">
+        <el-form :inline="true">
+          <div style="display: flex;justify-content: center">
+            <el-form-item class="form-item">
+              <el-input  placeholder="根据名称查询" style="width: 14vw"></el-input>
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-input  placeholder="根据数量查询" style="width: 14vw"></el-input>
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-input  placeholder="根据位置查询" style="width: 14vw"></el-input>
+            </el-form-item><el-form-item class="form-item">
+            <el-input  placeholder="根据类别查询" style="width: 14vw"></el-input>
+          </el-form-item>
+            <el-form-item class="form-item">
+              <el-button type="primary"  icon="el-icon-search">查询</el-button>
+              <el-button type="primary" >重置</el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-col>
+      </el-tab-pane>
+    </el-tabs>
+    <el-dialog
+        title="修改用户"
+        :visible.sync="editDialogVisible"
+        width="50%">
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
+        <el-form-item label="名称">
+          <el-input v-model="editForm.thingsInfo" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="位置" prop="email">
+          <el-input v-model="editForm.location"></el-input>
+        </el-form-item>
+        <el-form-item label="数量" prop="mobile">
+          <el-input v-model="editForm.count" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="类别" prop="mobile">
+          <el-input v-model="editForm.type"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="mobile">
+          <el-input v-model="editForm.state"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
     <div>
-      <table>
-        <thead>
-        <th>序号</th>
-        <th>物品名称</th>
-        <th>物品数量</th>
-        <th>入库时间</th>
-        <th>最后更新时间</th>
-        <th>操作</th>
-        </thead>
-        <tr v-for="(person) in persons" :key="person.onlyId">
-          <td><input type="text" v-model="person.id" :disabled="person.isDisabled" @keyup.enter="edit(person.onlyId)"></td>
-          <td><input type="text" v-model="person.itemName" :disabled="person.isDisabled" @keyup.enter="edit(person.onlyId)"></td>
-          <td><input type="text" v-model="person.number" :disabled="person.isDisabled" @keyup.enter="edit(person.onlyId)"></td>
-          <td><input type="text" v-model="person.inTime" :disabled="true"></td>
-          <td><input type="text" v-model="person.updateTime" :disabled="true"></td>
-          <td class="td-btn">
-            <button @click="edit(person.onlyId)">编辑</button>
-            <button @click="del(person.onlyId)">删除</button>
-          </td>
-        </tr>
-      </table>
+      <el-table :data="totalWarehouseInfos" border style="width:80%">
+        <el-table-column prop="id" label="序号"></el-table-column>
+        <el-table-column prop="thingsInfo" label="名称"></el-table-column>
+        <el-table-column prop="location" label="位置"></el-table-column>
+        <el-table-column prop="count" label="数量"></el-table-column>
+        <el-table-column prop="type" label="类别"></el-table-column>
+        <el-table-column prop="state" label="状态"></el-table-column>
+        <el-table-column  label="操作">
+          <template slot-scope="scope">
+            <el-button  type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" @click="showEditDialog(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <button @click="test">测试</button>
+      <button @click="addWarehouse()">添加库存表</button>
+      <div class="block">
+        <span class="demonstration">页数较少时的效果</span>
+        <el-pagination
+            layout="prev, pager, next"
+            :total="50">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+
+
+import {warehouseGetInfos} from "@/api/warehouse";
+
 export default {
   name: "ResourcesItem",
-  data:function (){
-    return{
+  data: function () {
+    return {
+      editDialogVisible:false,
+      editForm:[],
+      editFormRules: {
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          // { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          // { validator: checkMobile, trigger: 'blur' }
+        ]
+      },
+      activeName: 'first',
       //maxOnlyId:用来记录唯一的id值作为key
-      maxOnlyId:4,
+      maxOnlyId: 4,
       //totalNumber:用来记录总共的记录数量，作为编号输入
-      totalNumber:4,
-      isAddDisplay:false,
-      isQueryDisplay:false,
-      isShow:true,
-      persons:[
-        {
-          onlyId:1,
-          id:1,
-          itemName:"笔记本",
-          number:99,
-          inTime:Date.now(),
-          updateTime:Date.now(),
-          isDisabled:true
-        },
-        {
-          onlyId:2,
-          id:2,
-          itemName:"笔记本",
-          number:88,
-          inTime:Date.now(),
-          updateTime:Date.now(),
-          isDisabled:true
-        },
-        {
-          onlyId:3,
-          id:3,
-          itemName:"笔记本",
-          number:77,
-          inTime:Date.now(),
-          updateTime:Date.now(),
-          isDisabled:true
-        },
-        {
-          onlyId:4,
-          id:4,
-          itemName:"笔记本",
-          number:66,
-          inTime:Date.now(),
-          updateTime:Date.now(),
-          isDisabled:true
-        }
-      ],
-      person:{
-        itemName:"",
-        number:"",
-        isDisabled:true
+      totalNumber: 4,
+      isAddDisplay: false,
+      isQueryDisplay: false,
+      isShow: true,
+      person: {
+        itemName: "",
+        number: "",
+        isDisabled: true
+      },
+      totalWarehouseInfos:[],
+      warehouseInfo:{
+        limit:5,
+        page: 0,
+      },
+      oneWarehouseInfo:{
+
+      },
+      instorageInfo:{
+        purchaser:2,
+        channel:"银泰",
+        count:2,
+        notes:"备注",
       }
     }
   },
-  computed:{},
-  methods:{
-    edit(onlyId){
-      this.persons.find(x=>x.onlyId==onlyId).isDisabled
-          =!this.persons.find(x=>x.onlyId==onlyId).isDisabled
+  computed: {},
+  methods: {
+    showEditDialog(data){
+      this.editDialogVisible = true,
+          this.editForm=data
     },
-    del(onlyId){
-      let index=this.persons.findIndex(x=>{
-        if(x.onlyId==onlyId){
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
+    edit(onlyId) {
+      this.persons.find(x => x.onlyId == onlyId).isDisabled
+          = !this.persons.find(x => x.onlyId == onlyId).isDisabled
+
+    },
+    del(onlyId) {
+      let index = this.persons.findIndex(x => {
+        if (x.onlyId == onlyId) {
           return true
         }
       })
-      this.persons.splice(index,1)
+      this.persons.splice(index, 1)
     },
-    add(){
-      this.person.inTime=Date.now()
-      this.person.updateTime=Date.now()
+    add() {
+      this.person.inTime = Date.now()
+      this.person.updateTime = Date.now()
       this.maxOnlyId++;
-      this.person.onlyId=this.maxOnlyId
+      this.person.onlyId = this.maxOnlyId
       this.totalNumber++;
-      this.person.id=this.totalNumber;
+      this.person.id = this.totalNumber;
       this.persons.push(this.person)
-      this.person={
-        itemName:"",
-        number:"",
-        isDisabled:true
+      this.person = {
+        itemName: "",
+        number: "",
+        isDisabled: true
       }
     },
-    changeAddDisplay(){
-      this.isAddDisplay=true
-      this.isQueryDisplay=!this.isAddDisplay
-    },
-    changQueryDisplay(){
-      this.isQueryDisplay=true
-      this.isAddDisplay=!this.isQueryDisplay
-    },
-    cancelAction(){
-      this.isAddDisplay=false
-      this.isQueryDisplay=false
+
+  changeAddDisplay() {
+    this.isAddDisplay = true
+    this.isQueryDisplay = !this.isAddDisplay
+  },
+  changQueryDisplay() {
+    this.isQueryDisplay = true
+    this.isAddDisplay = !this.isQueryDisplay
+  },
+  cancelAction() {
+    this.isAddDisplay = false
+    this.isQueryDisplay = false
+  },
+  test() {
+    this.$store.dispatch('addInstorage',this.instorageInfo).then(res=>{
+      console.log(res.data.data)
+    })
+  },
+  addWarehouse(){
+      //oneWarehouseInfo在数据在传的时候可能会出错，拼写的原因，还有，测试数据被我删了，现在还没有，之后补充
+      this.$store.dispatch('addWarehouse',this.oneWarehouseInfo).then(res=>{
+        console.log(res.data)
+      }).catch(err=>{
+        console.log(err.response.data)
+      })
+  },
+    getTotalWarehouse(warehouseInfo){
+      warehouseGetInfos(warehouseInfo).then(res=>{
+        this.totalWarehouseInfos=res.data.data.records
+        console.log(res.data,this.totalWarehouseInfos)
+      })
     }
-  }
+},
+  created:function (){
+    setTimeout(()=>{
+      this.getTotalWarehouse(this.warehouseInfo)
+      console.log(this.totalWarehouseInfos)
+    })
+}
 }
 </script>
 
